@@ -1,0 +1,4 @@
+{
+	"aiXcoder.endpoint": "http://localhost:8787/",
+	"aiXcoder.localShowIncompleteSuggestions": true
+}

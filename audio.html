@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>tuozhuai</title>
+
+    <style>
+        .box {
+            background: red;
+            width: 100px;
+        }
+    </style>
+
+    <style>
+        #draggable {
+            /* position: fixed;
+            width: 100%;
+            bottom: 10px;
+            left: 2px; */
+        }
+
+        .audiojs {
+            width: 100%;
+            display: flex;
+        }
+
+        .audiojs .scrubber {
+            flex: 1;
+        }
+
+
+        .slider {
+            position: relative;
+            background-color: #e4e7ed;
+            /* width: 100%; */
+            height: 6px;
+            margin: 8px 9px;
+        }
+
+        .slider__bar {
+            display: inline-block;
+            transition: .2s linear;
+            height: 6px;
+            width: 0;
+
+            background-color: #409eff;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            position: absolute;
+        }
+
+        .slider__button {
+            position: absolute;
+            top: -6px;
+            left: 0;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid #409eff;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: .2s linear;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="draggable">
+
+        <button onclick="myAudio.play()">播放</button>
+        <button onclick="myAudio.pause()">暂停</button>
+        <button onclick="myAudio.setCurrentTime(50)">播放时间</button>
+
+        <button onclick="myAudio.play(0)">第一首</button>
+        <button onclick="myAudio.play(1)">第二首</button>
+    </div>
+
+    <div id="slider" class="slider">
+        <span id="slider__bar" class="slider__bar"></span>
+        <span id="slider__button" class="slider__button"></span>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <span id="progress"></span>
+
+    <!-- <script src="https://cdn.bootcss.com/hammer.js/2.0.8/hammer.js"></script> -->
+    <script src="./audio.js"></script>
+    <script>
+
+
+        var myAudio = new audiojs({
+            // el:el,可选
+            loop: "order",
+            playIndex: 0,
+            list: ["生命中只要有你.mp3", "./Peter Roe - Last Reunion (Epicmusicvn Series).mp3"],
+            callback: function (obj) {
+                progress.innerHTML = `${JSON.stringify(obj)}`
+                slider__bar.style.width = obj.progress + "%";
+                slider__button.style.left = obj.progress + "%";
+
+                if (obj.paused) {//设置暂停
+
+                } else {//设置播放样式
+
+                }
+            }
+        });
+
+        myAudio.list = ["生命中只要有你.mp3", "./Peter Roe - Last Reunion (Epicmusicvn Series).mp3"];//更改播放列表
+        // myAudio.play();//自动播放大部分场景会失败，需要与页面有任何交互行为才能播放，所有最好加在点击事件后面
+        // myAudio.play()//继续播放
+        // myAudio.pause()//停止
+
+        // 手动设置进度
+        slider.onclick = function (e) {
+            console.log([e.currentTarget]);
+            console.log(e.offsetX, e.offsetY, e);
+
+            myAudio.setCurrentTime(myAudio.duration * (e.offsetX / e.currentTarget.offsetWidth))
+        }
+
+
+
+        // var draggable = document.getElementById('draggable')
+        // console.log(draggable);
+
+        // var hammertime = new Hammer(draggable, {
+        //     domEvents: true
+        // });
+        // hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+
+        // // IE和Opera支持使用CurrentStyle获取的元素计算后的样式。getComputeStyle()方法可以获取当前元素所使用的css属性值。
+        // function getCss(o, key) {
+        //     return o.currentStyle ? o.currentStyle[key] : document.defaultView.getComputedStyle(o, false)[key];
+        // };
+        // draggable.style.bottom = getCss(draggable, "bottom");
+        // draggable.style.left = getCss(draggable, "left");
+        // var x = 0;
+        // var y = 0;
+        // hammertime.on('panstart', function (event) {
+        //     x = parseInt(draggable.style.left);
+        //     y = parseInt(draggable.style.bottom);
+        //     console.log(x, y, draggable.style);
+
+        // });
+        // hammertime.on('panmove', function (ev) {
+        //     draggable.style.bottom = y - ev.deltaY + "px";
+        //     // draggable.style.left = x + ev.deltaX + "px";
+        // });
+
+
+
+    </script>
+</body>
+
+</html>
