@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>移动元素</title>
+	<style>
+		#draggable {
+			position: fixed;
+			width: 100%;
+			bottom: 200px;
+			left: 100px;
+		}
+	</style>
+</head>
+
+<body>
+	<div>此页面和这个git库没啥关系</div>
+	<div id="draggable">
+		#draggable {
+		position: fixed;
+		width: 100%;
+		bottom: 10px;
+		left: 2px;
+		}
+	</div>
+	<script src="https://cdn.bootcss.com/hammer.js/2.0.8/hammer.js"></script>
+	<script>
+
+		var draggable = document.getElementById('draggable')
+		console.log(draggable);
+
+		var hammertime = new Hammer(draggable, {
+			domEvents: true
+		});
+		hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+
+		// IE和Opera支持使用CurrentStyle获取的元素计算后的样式。getComputeStyle()方法可以获取当前元素所使用的css属性值。
+		function getCss(o, key) {
+			return o.currentStyle ? o.currentStyle[key] : document.defaultView.getComputedStyle(o, false)[key];
+		};
+		draggable.style.bottom = getCss(draggable, "bottom");
+		draggable.style.left = getCss(draggable, "left");
+		var x = 0;
+		var y = 0;
+		hammertime.on('panstart', function (event) {
+			x = parseInt(draggable.style.left);
+			y = parseInt(draggable.style.bottom);
+			console.log(x, y, draggable.style);
+
+		});
+		hammertime.on('panmove', function (ev) {
+			draggable.style.bottom = y - ev.deltaY + "px";
+			draggable.style.left = x + ev.deltaX + "px";
+			draggable.innerHTML = `
+				#draggable {
+					position: fixed;
+					width: 100%;
+					bottom: ${y - ev.deltaY}px;
+					left: ${x + ev.deltaX}px;
+				}`
+		});
+
+	</script>
+</body>
+
+</html>
