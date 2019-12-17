@@ -1,3 +1,5 @@
+![''](./15.jpg)
+
 # 初始化
 ```
 	var myAudio = new audiojs({
