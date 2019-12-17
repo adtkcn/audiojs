@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>移动元素</title>
+	<style>
+		#draggable {
+			position: fixed;
+			width: 100%;
+			bottom: 200px;
+			left: 0px;
+		}
+
+		.flex {
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+		}
+
+		.flex_1 {
+			-webkit-box-flex: 1;
+			-ms-flex: 1;
+			flex: 1;
+
+		}
+
+
+		.music {
+			background-color: rgba(0, 0, 0, 0.6);
+			height: 70px;
+		}
+
+		.playAndPause {
+			float: left;
+			width: 60px;
+			height: 60px;
+			padding: 5px;
+
+			text-align: center;
+			line-height: 60px;
+		}
+
+		.playAndPause img {
+			display: inline-block;
+			height: 40px;
+			vertical-align: middle;
+		}
+
+		#play {
+			display: inline-block;
+		}
+
+		#pause {
+			display: none;
+		}
+
+
+		.music_right {
+			padding-left: 80px;
+			padding-right: 5px;
+		}
+
+
+		.music .title {
+			color: white;
+			font-size: 15px;
+			padding: 5px 6px 8px;
+		}
+
+
+
+		.music .info {
+			color: white;
+			font-size: 12px;
+			vertical-align: middle;
+		}
+
+		.music .info img {
+			width: 16px;
+			vertical-align: middle;
+		}
+	</style>
+
+	<style>
+		/* 进度条相关样式 */
+		.slider {
+			position: relative;
+			background-color: #e4e7ed;
+			/* width: 100%; */
+			height: 6px;
+			margin: 8px 9px;
+			font-size: 0;
+		}
+
+		.slider__bar {
+			display: inline-block;
+			transition: .2s linear;
+			height: 6px;
+			width: 0;
+
+			background-color: #409eff;
+			border-top-left-radius: 3px;
+			border-bottom-left-radius: 3px;
+			position: absolute;
+		}
+
+		.slider__button {
+			position: absolute;
+			top: -6px;
+			left: 0;
+			transform: translateX(-50%);
+			width: 16px;
+			height: 16px;
+			border: 2px solid #409eff;
+			background-color: #fff;
+			border-radius: 50%;
+			transition: .2s linear;
+			user-select: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="draggable">
+		<div class="music">
+			<div class="playAndPause">
+				<img src="play.png" id="play">
+				<img src="pause.png" id="pause">
+			</div>
+			<div class="music_right">
+				<div class="title">这是标题</div>
+				<div class="flex">
+					<div class="flex_1">
+						<div id="slider" class="slider">
+							<span id="slider__bar" class="slider__bar"></span>
+							<span id="slider__button" class="slider__button"></span>
+						</div>
+					</div>
+					<div class="info">
+						<span id="time">0:00/0:00</span>
+						<span>
+							<img id="closeMusic" src="close.png" alt="" srcset="">
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<button onclick="openMusic(0)">播放第一首</button>
+	<button onclick="openMusic(1)">播放第二首</button>
+
+	<script src="https://cdn.bootcss.com/hammer.js/2.0.8/hammer.js"></script>
+	<script src="../audio.js"></script>
+	<script>
+		var draggable = document.getElementById('draggable') //拖动元素
+		var closeMusic = document.getElementById('closeMusic')//播放器上的关闭
+		var slider = document.getElementById('slider') //播放器上的进度条
+		console.log(closeMusic);
+
+
+		var myAudio = new audiojs({
+
+			loop: "once",//播放一次
+			playIndex: 0,
+			list: ["../music/生命中只要有你.mp3", "../music/Peter Roe - Last Reunion (Epicmusicvn Series).mp3"],
+			callback: function (obj) {
+				// progress.innerHTML = `${JSON.stringify(obj)}`
+				slider__bar.style.width = obj.progress + "%";
+				slider__button.style.left = obj.progress + "%";
+
+				time.innerHTML = obj.formatCurrentTime + "/" + obj.formatDuration
+				if (obj.paused) {//是否暂停
+					play.style.display = "inline-block"
+					pause.style.display = "none"
+
+				} else {//设置播放样式
+					play.style.display = "none"
+					pause.style.display = "inline-block"
+				}
+			}
+		});
+		function openMusic(playIndex) {
+			draggable.style.display = "block";
+			myAudio.play(playIndex);
+		}
+		closeMusic.onclick = function () {
+			draggable.style.display = "none"
+			myAudio.pause()
+		}
+
+		play.onclick = myAudio.play;
+		pause.onclick = myAudio.pause;
+
+
+		slider.onclick = function (e) {
+			myAudio.setCurrentTime(myAudio.duration * (e.offsetX / e.currentTarget.offsetWidth))
+		}
+
+
+
+
+		var hammertime = new Hammer(draggable, {
+			domEvents: true
+		});
+		hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+
+		// IE和Opera支持使用CurrentStyle获取的元素计算后的样式。getComputeStyle()方法可以获取当前元素所使用的css属性值。
+		function getCss(o, key) {
+			return o.currentStyle ? o.currentStyle[key] : document.defaultView.getComputedStyle(o, false)[key];
+		};
+		draggable.style.bottom = getCss(draggable, "bottom");
+		draggable.style.left = getCss(draggable, "left");
+		var x = 0;
+		var y = 0;
+		hammertime.on('panstart', function (event) {
+			x = parseInt(draggable.style.left);
+			y = parseInt(draggable.style.bottom);
+			console.log(x, y, draggable.style);
+
+		});
+		hammertime.on('panmove', function (ev) {
+			draggable.style.bottom = y - ev.deltaY + "px";
+			// draggable.style.left = x + ev.deltaX + "px";
+		});
+
+	</script>
+</body>
+
+</html>
