@@ -1,4 +1,5 @@
 {
 	"aiXcoder.endpoint": "http://localhost:8787/",
-	"aiXcoder.localShowIncompleteSuggestions": true
+	"aiXcoder.localShowIncompleteSuggestions": true,
+	"liveServer.settings.port": 5501
 }
